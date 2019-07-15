@@ -1,13 +1,25 @@
+@echo off
+
 del *.tar
 del *.gz
-set app=ideaServer
-7z a %app%.tar %app%/
-7z a -tgzip %app%.tar.gz %app%.tar
 
-set app=virtualHere
-7z a %app%.tar %app%/
-7z a -tgzip %app%.tar.gz %app%.tar
+if exist package (
+	rd package /s/q
+) else (
+	md package
+)
 
+call :myPackage ideaServer
+call :myPackage virtualHere
 del *.tar
-
+dir package
 pause
+exit /b 0
+
+:myPackage
+	set app=%1
+	echo app is : [%app%]
+	7z a %app%.tar %app%/
+	7z a -tgzip package/%app%.tar.gz %app%.tar
+goto:eof
+
