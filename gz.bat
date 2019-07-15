@@ -3,23 +3,30 @@
 del *.tar
 del *.gz
 
-if exist package (
-	rd package /s/q
+set packageDir=package
+
+if exist %packageDir% (
+	rd %packageDir% /s/q
 ) else (
-	md package
+	md %packageDir%
 )
 
 call :myPackage ideaServer
 call :myPackage virtualHere
 del *.tar
-dir package
+dir %packageDir%
 pause
 exit /b 0
 
 :myPackage
+	set workDir=%~dp0
 	set app=%1
 	echo app is : [%app%]
-	7z a %app%.tar %app%/
-	7z a -tgzip package/%app%.tar.gz %app%.tar
+	xcopy  %app% %packageDir%\%app%\ /se
+	xcopy  base %packageDir%\%app%\ /se
+	cd %workDir%\%packageDir%
+	%workDir%\7z a %app%.tar %app%
+	%workDir%\7z a -tgzip %app%.tar.gz %app%.tar
+	cd %workDir%
 goto:eof
 

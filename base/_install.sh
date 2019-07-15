@@ -28,6 +28,9 @@ mycp /tmp/${app}/webs
 mycp /tmp/${app}/res
 mycp /tmp/${app}/bin
 
+find /tmp/${app} -type f>/koolshare/res/installFile_${app}.txt
+
+
 rm -rf /tmp/${app}* >/dev/null 2>&1
 
 chmod -R a+x /koolshare/bin/
