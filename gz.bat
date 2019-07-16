@@ -27,6 +27,7 @@ exit /b 0
 	cd %workDir%\%packageDir%
 	%workDir%\7z a %app%.tar %app%
 	%workDir%\7z a -tgzip %app%.tar.gz %app%.tar
+	del %app%.tar
 	cd %workDir%
 goto:eof
 
