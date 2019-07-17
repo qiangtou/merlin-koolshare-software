@@ -5,38 +5,28 @@ bin=$2
 
 echo install ${app}
 
-if [ ! -d /koolshare/${app} ]; then
-   mkdir -p /koolshare/${app}
-else
-   rm -rf /koolshare/${app}
-fi
-
-mycp(){
-	myPath=$1
-	myDir=$(basename ${myPath})
-	if [ -d $myPath ];then
-		if [ $(ls ${myPath}|wc -l) -ne 0 ];then
-			cp -rf ${myPath}/* /koolshare/${myDir}/
-		else
-			echo ${myPath}/ is empty!!
-		fi
-	else
-		echo warnning:${myPath} is not exist!!
-	fi
-}
-mycp /tmp/${app}/scripts
-mycp /tmp/${app}/webs
-mycp /tmp/${app}/res
-mycp /tmp/${app}/bin
-
-find /tmp/${app}/|grep -v install.sh$|sed "s#^/tmp/${app}/#/koolshare/#g" >/koolshare/installFile_${app}.txt
-installfiles=$(cat /koolshare/installFile_${app}.txt)
 >/koolshare/installFile_${app}.txt
+
 echo 安装文件清单:
-for line in $installfiles
+
+#排除安装,卸载脚本,列出所有文件
+for file in $(find /tmp/${app}/|grep -v install.sh$)
 do
-	if [ -f ${line} ];then
-		echo ${line}|tee -a /koolshare/installFile_${app}.txt
+	#将源文件前缀"/tmp/插件名/"替换成"/koolshare/",得到目标文件路径
+	targetFile=$(echo ${file}|sed "s#^/tmp/${app}/#/koolshare/#g")	
+	#复制文件
+	if [ -f ${file} ];then
+		targetFileDir=$(dirname ${targetFile})
+		if [ ! -d ${targetFileDir} ];then
+			mkdir -p ${targetFileDir}
+		fi	
+		cp ${file} ${targetFile}
+		echo ${targetFile}|tee -a /koolshare/installFile_${app}.txt	
+	fi
+	#创建目录
+	if [ -d ${file} ];then
+		mkdir -p ${targetFile}
+		echo ${targetFile}|tee -a /koolshare/installFile_${app}.txt	
 	fi
 done
 
