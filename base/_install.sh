@@ -30,6 +30,13 @@ do
 	fi
 done
 
+if [ -f /koolshare/scripts/${app}.sh ];then
+	rm -rf /koolshare/init.d/S${app}.sh
+	ln -s /koolshare/scripts/${app}.sh /koolshare/init.d/S${app}.sh
+	echo now start app [${app}]...
+	sh -x /koolshare/scripts/${app}.sh start
+fi
+
 rm -rf /tmp/${app}* >/dev/null 2>&1
 
 chmod -R a+x /koolshare/bin/
