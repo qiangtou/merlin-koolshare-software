@@ -20,8 +20,7 @@ exit /b 0
 	
 	xcopy  %workDir%\plugins\%app% %packageDir%\%app%\ /se
 	xcopy  %workDir%\base %packageDir%\%app%\ /se
-	echo uninstall %app%>>%packageDir%\%app%\uninstall.sh
-	
+
 	cd %packageDir%
 	%workDir%7z a %app%.tar %app%
 	%workDir%7z a %app%.tar %workDir%\%app%	

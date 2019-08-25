@@ -20,3 +20,7 @@ uninstall(){
 	done	
 	rm /koolshare/installFile_${app}.txt
 }
+
+#$0=uninstall_app.sh
+app=$(basename $0 .sh|sed '/uninstall_//g')
+uninstall $app
