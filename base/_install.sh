@@ -30,9 +30,20 @@ do
 	fi
 done
 
+#将卸载脚本添加到/koolshare/scripts/
+cp /tmp/${app}/uninstall.sh /koolshare/scripts/uninstall_${app}.sh
+if [ -f /koolshare/scripts/uninstall_${app}.sh ];then
+	echo /koolshare/scripts/uninstall_${app}.sh|tee -a /koolshare/installFile_${app}.txt
+fi
+#将脚本添加到启动项
 if [ -f /koolshare/scripts/${app}.sh ];then
 	rm -rf /koolshare/init.d/S${app}.sh
 	ln -s /koolshare/scripts/${app}.sh /koolshare/init.d/S${app}.sh
+	
+	if [ -f /koolshare/init.d/S${app}.sh ];then
+		echo /koolshare/init.d/S${app}.sh|tee -a /koolshare/installFile_${app}.txt
+	fi
+	
 	echo now start app [${app}]...
 	sh -x /koolshare/scripts/${app}.sh start
 fi
