@@ -18,12 +18,11 @@ exit /b 0
 	set app=%1
 	echo app is : [%app%]
 	
-	xcopy  %workDir%\plugins\%app% %packageDir%\%app%\ /se
-	xcopy  %workDir%\base %packageDir%\%app%\ /se
-
+	xcopy  %workDir%plugins\%app% %packageDir%\%app%\ /y /e /i /q
+	xcopy  %workDir%base %packageDir%\%app%\ /y /e /i /q
 	cd %packageDir%
 	%workDir%7z a %app%.tar %app%
-	%workDir%7z a %app%.tar %workDir%\%app%	
+	%workDir%7z a %app%.tar %workDir%%app%	
 	%workDir%7z a -tgzip %app%.tar.gz %app%.tar
 	del %app%.tar
 	

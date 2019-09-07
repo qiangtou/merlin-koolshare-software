@@ -9,10 +9,12 @@
 <meta HTTP-EQUIV="Expires" CONTENT="-1"/>
 <link rel="shortcut icon" href="images/favicon.png"/>
 <link rel="icon" href="images/favicon.png"/>
-<title>软件中心 - DDNSTO远程控制</title>
+<title>软件中心 - virtualHere</title>
 <link rel="stylesheet" type="text/css" href="index_style.css"/>
 <link rel="stylesheet" type="text/css" href="form_style.css"/>
 <link rel="stylesheet" type="text/css" href="css/element.css">
+<script type="text/javascript" src="/res/vue.js"></script>
+<script type="text/javascript" src="/res/axios.min.js"></script>
 <script language="JavaScript" type="text/javascript" src="/state.js"></script>
 <script language="JavaScript" type="text/javascript" src="/help.js"></script>
 <script language="JavaScript" type="text/javascript" src="/general.js"></script>
@@ -21,7 +23,7 @@
 <script language="JavaScript" type="text/javascript" src="/validator.js"></script>
 <script type="text/javascript" src="/js/jquery.js"></script>
 <script type="text/javascript" src="/switcherplugin/jquery.iphone-switch.js"></script>
-<script type="text/javascript" src="/dbconf?p=ddnsto&v=Sat, 13 Jul 2019 16:18:47 +0800(2250287 secs since boot)"></script>
+<script type="text/javascript" src="/dbconf?p=virtualHere&v=2019-09-07 23:50:04"></script>
 <style>
 .Bar_container {
     width:85%;
@@ -45,24 +47,6 @@
     background:#C0D1D3 url(/images/ss_proceding.gif);
 }
 
-.ddnsto_btn {
-    border: 1px solid #222;
-    background: linear-gradient(to bottom, #003333  0%, #000000 100%); /* W3C */
-    font-size:10pt;
-    color: #fff;
-    padding: 5px 5px;
-    border-radius: 5px 5px 5px 5px;
-    width:16%;
-}
-.ddnsto_btn:hover {
-    border: 1px solid #222;
-    background: linear-gradient(to bottom, #27c9c9  0%, #279fd9 100%); /* W3C */
-    font-size:10pt;
-    color: #fff;
-    padding: 5px 5px;
-    border-radius: 5px 5px 5px 5px;
-    width:16%;
-}
 
 input[type=button]:focus {
     outline: none;
@@ -97,69 +81,8 @@ function E(e) {
 
 function init() {
     show_menu(menu_hook);
-    get_status();
     conf_to_obj();
     buildswitch();
-    toggle_switch();
-    notice_show();
-    version_show();
-}
-
-function get_status() {
-    $.ajax({
-        url: 'apply.cgi?current_page=Module_ddnsto.asp&next_page=Module_ddnsto.asp&group_id=&modified=0&action_mode=+Refresh+&action_script=&action_wait=&first_time=&preferred_lang=CN&SystemCmd=ddnsto_status.sh',
-        dataType: 'html',
-        error: function(xhr) {
-            alert("error");
-        },
-        success: function(response) {
-            //alert("success");
-            setTimeout("check_DDNSTO_status();", 1000);
-        }
-    });
-}
-
-
-function check_DDNSTO_status() {
-    $.ajax({
-        url: '/res/ddnsto_check.html',
-        dataType: 'html',
-
-        error: function(xhr) {
-            setTimeout("check_DDNSTO_status();", 1000);
-        },
-        success: function(response) {
-            var _cmdBtn = E("cmdBtn");
-            if (response.search("XU6J03M6") != -1) {
-                ddnsto_status = response.replace("XU6J03M6", " ");
-                //alert(ddnsto_status);
-                E("status").innerHTML = ddnsto_status;
-                return true;
-            }
-
-            if (_responseLen == response.length) {
-                noChange_status++;
-            } else {
-                noChange_status = 0;
-            }
-            if (noChange_status > 100) {
-                noChange_status = 0;
-                //refreshpage();
-            } else {
-                setTimeout("check_DDNSTO_status();", 400);
-            }
-            _responseLen = response.length;
-        }
-    });
-}
-
-function toggle_switch() {
-    var rrt = E("switch");
-    if (document.form.ddnsto_enable.value != "1") {
-        rrt.checked = false;
-    } else {
-        rrt.checked = true;
-    }
 }
 
 function buildswitch() {
@@ -206,11 +129,11 @@ function menu_hook(title, tab) {
     var enable_ss = "0";
     var enable_soft = "1";
     if (enable_ss == "1" && enable_soft == "1") {
-        tabtitle[tabtitle.length - 2] = new Array("", "ddnsto 远程控制");
-        tablink[tablink.length - 2] = new Array("", "Module_ddnsto.asp");
+        tabtitle[tabtitle.length - 2] = new Array("", "virtualHere");
+        tablink[tablink.length - 2] = new Array("", "Module_virtualHere.asp");
     } else {
-        tabtitle[tabtitle.length - 1] = new Array("", "ddnsto 远程控制");
-        tablink[tablink.length - 1] = new Array("", "Module_ddnsto.asp");
+        tabtitle[tabtitle.length - 1] = new Array("", "virtualHere");
+        tablink[tablink.length - 1] = new Array("", "Module_virtualHere.asp");
     }
 }
 
@@ -320,43 +243,7 @@ function LoadingLocalProgress(seconds) {
 function reload_Soft_Center() {
     location.href = "/Main_Soft_center.asp";
 }
-function notice_show(){
-    $.ajax({
-        url: 'https://ks.ddnsto.com/ddnsto/push_message.json.js',
-        type: 'GET',
-        dataType: 'jsonp',
-        success: function(res) {
-			$("#push_titile").html(res.title);
-			$("#push_content1").html(res.content1);
-			$("#push_content2").html(res.content2);
-			$("#push_content3").html(res.content3);
-			if(res.content4){
-				document.getElementById("push_content4_li").style.display = "";
-				$("#push_content4").html(res.content4);
-			}
-			if(res.content5){
-				document.getElementById("push_content5_li").style.display = "";
-				$("#push_content5").html(res.content5);
-			}
-        }
-    });
-}
-function version_show() {
-    $.ajax({
-        url: 'https://ks.ddnsto.com/ddnsto/config.json.js',
-        type: 'GET',
-        dataType: 'jsonp',
-        success: function(res) {
-            if (typeof(res["version"]) != "undefined" && res["version"].length > 0) {
-                if (res["version"] == db_ddnsto["ddnsto_version"]) {
-                    $("#ddnsto_version_show").html("插件版本：" + res["version"]);
-                } else if (res["version"] > db_ddnsto["ddnsto_version"]) {
-                    $("#ddnsto_version_show").html("<font color=\"#66FF66\">有新版本：" + res.version + "</font>");
-                }
-            }
-        }
-    });
-}
+
 </script>
 </head>
 <body onload="init();">
@@ -405,26 +292,27 @@ function version_show() {
                                     <tr>
                                         <td bgcolor="#4D595D" colspan="3" valign="top">
                                             <div>&nbsp;</div>
-                                            <div class="formfonttitle">软件中心 - ddnsto远程控制</div>
+                                            <div class="formfonttitle">软件中心 - virtualHere</div>
                                             <div style="float:right; width:15px; height:25px;margin-top:-20px">
                                                 <img id="return_btn" onclick="reload_Soft_Center();" align="right" style="cursor:pointer;position:absolute;margin-left:-30px;margin-top:-25px;" title="返回软件中心" src="/images/backprev.png" onMouseOver="this.src='/images/backprevclick.png'" onMouseOut="this.src='/images/backprev.png'"></img>
                                             </div>
+											
+											<!-- 分割线 -->
                                             <div style="margin-left:5px;margin-top:10px;margin-bottom:10px">
                                                 <img src="/images/New_ui/export/line_export.png">
                                             </div>
 
 											<div id='app'>
-											{{ message }}												
+											{{ message }}											
 											</div>
 
-
+											<!-- 分割线 -->
                                             <div style="margin-left:5px;margin-top:10px;margin-bottom:10px">
                                                 <img src="/images/New_ui/export/line_export.png">
                                             </div>
-                                            <div id="NoteBox" style="display:none">
-                                                <li>ddnsto远程控制目前处于测试阶段，仅提供给koolshare固件用户使用，提供路由界面的穿透，请勿用于反动、不健康等用途；</li>
-                                                <li>穿透教程：<a id="gfw_number" href="http://koolshare.cn/thread-116500-1-1.html" target="_blank"><i>DDNSTO远程控制使用教程</i></a>
-                                                </li>
+                                            <div id="NoteBox">
+                                                <li>VirtualHere允许USB设备通过网络远程使用，就像它们在本地连接一样！</li>
+                                                <li>virtualhere官网：<a href="http://www.virtualhere.com/" target="_blank"><i>http://www.virtualhere.com/</i></a></li>
                                             </div>
                                         </td>
                                     </tr>
@@ -438,17 +326,14 @@ function version_show() {
         </table>
     </form>
     <div id="footer"></div>
-												<script src="/res/ideaServer_js/vue.js"></script>
-											<script src="/res/ideaServer_js/axios.min.js"></script>
-											<script>
+	<script>
 											var app = new Vue({
   el: '#app',
   data: {
-    message: 'Hello Vue!'
+    message: 'Hello virtualHere!'
   }
 })
-
-											</script>
+    </script>
 </body>
 </html>
 

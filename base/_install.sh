@@ -5,9 +5,11 @@ bin=$2
 
 echo install ${app}
 
->/koolshare/installFile_${app}.txt
-
 echo 安装文件清单:
+
+# 卸载脚本复制
+cp /tmp/${app}/uninstall.sh /koolshare/scripts/uninstall_${app}.sh
+echo "sh /koolshare/scripts/${app}.sh stop">>/koolshare/scripts/uninstall_${app}.sh
 
 #排除安装,卸载脚本,列出所有文件
 for file in $(find /tmp/${app}/|grep -v install.sh$)
@@ -21,32 +23,30 @@ do
 			mkdir -p ${targetFileDir}
 		fi	
 		cp ${file} ${targetFile}
-		echo ${targetFile}|tee -a /koolshare/installFile_${app}.txt	
+		echo ${targetFile}
+		echo rm -f ${targetFile}>>/koolshare/scripts/uninstall_${app}.sh
 	fi
 	#创建目录
 	if [ -d ${file} ];then
-		mkdir -p ${targetFile}
-		echo ${targetFile}|tee -a /koolshare/installFile_${app}.txt	
+		mkdir -p ${targetFile}	
 	fi
 done
 
-#将卸载脚本添加到/koolshare/scripts/
-cp /tmp/${app}/uninstall.sh /koolshare/scripts/uninstall_${app}.sh
-if [ -f /koolshare/scripts/uninstall_${app}.sh ];then
-	echo /koolshare/scripts/uninstall_${app}.sh|tee -a /koolshare/installFile_${app}.txt
-fi
+
+
 #将脚本添加到启动项
 if [ -f /koolshare/scripts/${app}.sh ];then
 	rm -rf /koolshare/init.d/S${app}.sh
 	ln -s /koolshare/scripts/${app}.sh /koolshare/init.d/S${app}.sh
-	
-	if [ -f /koolshare/init.d/S${app}.sh ];then
-		echo /koolshare/init.d/S${app}.sh|tee -a /koolshare/installFile_${app}.txt
-	fi
-	
+	echo /koolshare/init.d/S${app}.sh
+	echo rm -f /koolshare/init.d/S${app}.sh>>/koolshare/scripts/uninstall_${app}.sh	
 	echo now start app [${app}]...
-	sh -x /koolshare/scripts/${app}.sh start
+	sh /koolshare/scripts/${app}.sh start
+	echo now start app [${app}] ok...
 fi
+
+# 卸载时删除自己
+echo rm -f /koolshare/scripts/uninstall_${app}.sh>>/koolshare/scripts/uninstall_${app}.sh
 
 rm -rf /tmp/${app}* >/dev/null 2>&1
 

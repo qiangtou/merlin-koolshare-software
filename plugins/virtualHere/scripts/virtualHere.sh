@@ -9,6 +9,14 @@ case "$action" in
 			logger ${plugin} is start fail!!
 		 fi
         ;;
+	stop)
+         /koolshare/bin/vhusbdarm -b
+		 if [ $? -eq 0 ]; then
+			logger ${plugin} is start ok!!
+			else 
+			logger ${plugin} is start fail!!
+		 fi
+        ;;
     *)
         logger not support action $action !!
         ;;
